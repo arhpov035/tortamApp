@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.arhipov035.tortamApp"
     },
     "web": {
       "bundler": "metro",
@@ -34,8 +35,19 @@
         }
       ]
     ],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "7271cd24-32a5-4f2c-92f4-1dfe6caf76dd"
+      }
     }
   }
 }

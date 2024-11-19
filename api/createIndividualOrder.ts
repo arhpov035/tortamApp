@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import axios from "axios";
+import { CONFIG } from '@/config';
 
 // Определяем типы для фото
 type WebPhoto = File;
@@ -10,7 +11,8 @@ type MobilePhoto = {
 };
 type PhotoType = WebPhoto | MobilePhoto | null;
 
-const apiUrl = 'https://sb-api.tortam.ru/api/v1';
+// const apiUrl = 'https://sb-api.tortam.ru/api/v1';
+const apiUrl = CONFIG.BASE_URL;
 
 if (!apiUrl) {
     throw new Error('REACT_NATIVE_API_URL не определён в конфигурации');

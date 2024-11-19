@@ -14,6 +14,9 @@ import { TextInputMask } from 'react-native-masked-text';
 import { createIndividualOrder } from "@/api/createIndividualOrder";
 import { validatePhone } from "@/utils/validatePhone";
 import { NavigationContainer } from "@react-navigation/native";
+import CakeIconSvg from '@/components/svg/CakeIconSvg';
+import CupcakeIconSvg from '@/components/svg/CupcakeIconSvg';
+import HomeIconSvg from '@/components/svg/HomeIconSvg';
 
 export default function TabsLayout() {
     const colorScheme = useColorScheme();
@@ -99,41 +102,36 @@ export default function TabsLayout() {
                 screenOptions={{
                     tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
                     headerShown: false,
+                    tabBarStyle: {
+                        zIndex: 10, // Устанавливаем zIndex
+                        elevation: 10, // Для Android добавьте elevation (аналог zIndex)
+                    },
                 }}>
                 <Tabs.Screen
                     name="index"
                     options={{
                         title: 'Главная',
                         tabBarIcon: ({ color, focused }) => (
-                            <Ionicons name="home" size={sizeIcon} color={color} />
+                            <HomeIconSvg color={focused ? '#FF8C52' : color} size={sizeIcon} />
                         ),
                     }}
                 />
                 <Tabs.Screen
-                    name="VideoList"
+                    name="cakes"
                     options={{
-                        title: 'Видео',
+                        title: 'Торты',
                         tabBarIcon: ({ color, focused }) => (
-                            <Ionicons name="home" size={sizeIcon} color={color} />
+                            <CakeIconSvg color={focused ? '#FF849C' : color} size={sizeIcon} />
                         ),
                     }}
                 />
                 <Tabs.Screen
-                    name="explore"
+                    name="cupcakes"
                     options={{
-                        tabBarLabel: 'Explore',
+                        title: 'Капкейки',
                         tabBarIcon: ({ color, focused }) => (
-                            <Ionicons name="happy" size={sizeIcon} color={color} />
+                            <CupcakeIconSvg color={focused ? '#FF849C' : color} size={sizeIcon} />
                         ),
-                        // tabBarButton: (props) => (
-                        //     <TouchableOpacity {...props} onPress={() => setIsSecondModalVisible(true)}/>
-                        // ),
-                        tabBarLabelStyle: {
-                            fontSize: 12,
-                        },
-                        tabBarIconStyle: {
-                            justifyContent: 'center',
-                        },
                     }}
                 />
             </Tabs>
@@ -201,7 +199,14 @@ export default function TabsLayout() {
                         <Text style={styles.submitButtonText}>Отправить</Text>
                     </TouchableOpacity>
 
-                    {response && <Text style={styles.responseText}>{response}</Text>}
+                    {response ? (
+                        typeof response === 'string' ? (
+                            <Text style={styles.responseText}>{response}</Text>
+                        ) : (
+                            <Text style={styles.responseText}>Ошибка: Некорректный формат данных</Text>
+                        )
+                    ) : null}
+
                 </View>
             </CustomModal>
         </View>
@@ -349,4 +354,3 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
-

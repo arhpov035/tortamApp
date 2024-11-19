@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import { fetchProducts, Product } from '@/api/productsApi';
 import ProductCard from '@/components/ProductCard';
+import CustomModal from './CustomModal';
+import { TextInputMask } from 'react-native-masked-text';
+import PhoneOrderApi from '@/api/PhoneOrderApi';
+import { PhoneOrder } from '@/types/PhoneOrderApi';
+import { normalizePhoneNumber } from '@/utils/normalizePhoneNumber';
 
 const ProductList: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -10,6 +15,12 @@ const ProductList: React.FC = () => {
     const [start, setStart] = useState<number>(0);
     const [loadingMore, setLoadingMore] = useState<boolean>(false);
     const [hasMore, setHasMore] = useState<boolean>(true);
+
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const [phone, setPhone] = useState('');
+    const [phoneError, setPhoneError] = useState<string | null>(null);
 
     const PRODUCTS_PER_PAGE = 10;
 
@@ -37,6 +48,51 @@ const ProductList: React.FC = () => {
         }
     };
 
+    const handleOrderClick = (product: Product) => {
+        setSelectedProduct(product);
+        setIsModalVisible(true);
+    };
+
+    const handleModalClose = () => {
+        setIsModalVisible(false);
+        setSelectedProduct(null);
+    };
+
+    const handlePhoneChange = (text: string) => {
+        setPhone(text);
+        if (phoneError) setPhoneError(null);
+    };
+
+    const handleFormSubmit = async () => {
+        if (!phone || phone.length < 18) { // Проверка корректности номера
+            setPhoneError('Введите корректный номер телефона');
+            return;
+        }
+
+
+
+        const formattedPhone = normalizePhoneNumber(phone);
+        console.log('Product ID:', selectedProduct?.id);
+        console.log('Phone:', formattedPhone);
+
+        const newOrder: PhoneOrder = {
+            productId: Number(selectedProduct?.id) || 0, // Устанавливаем значение по умолчанию, если id не определен
+            phoneNumber: formattedPhone,
+            status: 'Pending',
+        };
+
+        try {
+            const createdOrder = await PhoneOrderApi.createPhoneOrder(newOrder);
+            console.log('Order created:', createdOrder);
+        } catch (error) {
+            console.error('Error creating order:', error);
+        }
+
+        // Закрытие модального окна и очистка состояния
+        setPhone('');
+        handleModalClose();
+    };
+
     useEffect(() => {
         loadProducts(0);
     }, []);
@@ -58,35 +114,64 @@ const ProductList: React.FC = () => {
     }
 
     return (
-        <FlatList
-            data={products}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.listContent}
-            renderItem={({ item }) => (
-                <ProductCard product={item} handlePriceClick={() => console.log('Price clicked')} />
-            )}
-            onEndReached={() => {
-                if (hasMore && !loadingMore) {
-                    const nextStartIndex = start + PRODUCTS_PER_PAGE;
-                    setStart(nextStartIndex);
-                    loadProducts(nextStartIndex, true);
-                }
-            }}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={() =>
-                loadingMore ? (
-                    <View style={styles.centered}>
-                        <ActivityIndicator size="small" color="#0000ff" />
-                    </View>
-                ) : (
-                    !hasMore && (
+        <>
+            <FlatList
+                data={products}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.listContent}
+                numColumns={2}
+                columnWrapperStyle={styles.row}
+                renderItem={({ item }) => (
+                    // <ProductCard product={item} handlePriceClick={() => console.log('Price clicked')} />
+                    <ProductCard
+                        product={item}
+                        handlePriceClick={() => handleOrderClick(item)}
+                    />
+                )}
+                onEndReached={() => {
+                    if (hasMore && !loadingMore) {
+                        const nextStartIndex = start + PRODUCTS_PER_PAGE;
+                        setStart(nextStartIndex);
+                        loadProducts(nextStartIndex, true);
+                    }
+                }}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={() =>
+                    loadingMore ? (
                         <View style={styles.centered}>
-                            <Text>Товары закончились</Text>
+                            <ActivityIndicator size="small" color="#0000ff" />
                         </View>
+                    ) : (
+                        !hasMore && (
+                            <View style={styles.centered}>
+                                <Text>Товары закончились</Text>
+                            </View>
+                        )
                     )
-                )
-            }
-        />
+                }
+            />
+
+            <CustomModal visible={isModalVisible} onClose={handleModalClose}>
+                <View style={styles.formContainer}>
+                    <Text style={styles.label}>Номер телефона:</Text>
+                    <TextInputMask
+                        type={'custom'}
+                        options={{ mask: '+7 (999) 999-99-99' }}
+                        value={phone}
+                        onChangeText={handlePhoneChange}
+                        keyboardType="phone-pad"
+                        style={[styles.input, phoneError ? styles.inputError : null]}
+                        placeholder="+7 (___) ___-__-__"
+                    />
+                    {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
+                </View>
+
+                <TouchableOpacity style={styles.submitButton} onPress={handleFormSubmit}>
+                    <Text style={styles.submitButtonText}>Отправить</Text>
+                </TouchableOpacity>
+            </CustomModal>
+
+        </>
     );
 };
 
@@ -97,26 +182,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    row: {
+        // justify-content: space-between;
+        justifyContent: "space-between",
+    },
     listContent: {
-        paddingHorizontal: 5,
+        paddingHorizontal: 10, // Поля для всего списка
         paddingTop: 16,
         paddingBottom: 70,
-    },
-    productCard: {
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: '#e0e0e0',
-        borderRadius: 8,
-        padding: 15,
-        marginBottom: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 3,
-        textAlign: 'center',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
     },
     productCardImgContainer: {
         position: 'relative',
@@ -147,6 +220,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     pricingItem: {
+        gap: '7px',
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginVertical: 2,
@@ -169,6 +243,43 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     buyButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    formContainer: {
+        padding: 20,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+    },
+    label: {
+        fontSize: 16,
+        marginBottom: 8,
+        color: '#333',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        padding: 10,
+        fontSize: 16,
+        marginBottom: 10,
+    },
+    inputError: {
+        borderColor: 'red',
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+        marginBottom: 10,
+    },
+    submitButton: {
+        backgroundColor: '#007bff',
+        paddingVertical: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    submitButtonText: {
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',

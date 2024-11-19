@@ -41,9 +41,9 @@ const HomePage: React.FC = () => {
 
     return (
         <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginVertical: 10 }}>
+            {/* <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginVertical: 10 }}>
                 Главная страница
-            </Text>
+            </Text> */}
             <ProductList />
         </View>
     );

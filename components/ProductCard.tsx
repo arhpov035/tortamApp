@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { fetchProducts, Product } from '@/api/productsApi';
+import { Link } from 'expo-router';
 
 interface ProductCardProps {
     product: Product;
@@ -12,19 +13,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handlePriceClick }) 
     return (
         <View style={styles.productCard}>
             {/* Контейнер изображения продукта */}
-            <TouchableOpacity style={styles.productCardImgContainer} onPress={() => console.log('Image clicked')}>
+            <Link href={`/product/${product.id}`} style={styles.productCardImgContainer}>
                 <Image
                     source={{ uri: product.image_url }}
                     style={styles.productImage}
                     resizeMode="contain"
                 />
-            </TouchableOpacity>
-
+            </Link>
             {/* Название продукта */}
             <Text style={styles.productTitle}>{product.productname}</Text>
 
             {/* Цена продукта */}
-            <Text style={styles.price}>{product.price ? `${product.price} Р` : '2500 Р/кг'}</Text>
+            <Text style={styles.price}>{product.price ? `${product.price} Р` : '2200 Р/кг'}</Text>
 
             {/* Кнопка "Заказать в 1 клик" */}
             <TouchableOpacity style={styles.buyButton} onPress={handlePriceClick}>
@@ -41,8 +41,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#e0e0e0',
         borderRadius: 8,
-        padding: 15,
-        marginBottom: 20,
+        marginBottom: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -51,6 +50,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         flexDirection: 'column',
         justifyContent: 'space-between',
+        width: '49%', // Чтобы в одну строку помещалось две карточки
     },
     productCardImgContainer: {
         position: 'relative',
@@ -67,15 +67,19 @@ const styles = StyleSheet.create({
         minHeight: 48,
         overflow: 'hidden',
         textAlign: 'center',
-        fontSize: 16,
-        fontWeight: 'bold',
+        fontSize: 14,
+        fontWeight: '600',
         color: '#333',
+        paddingLeft: 5,
+        paddingRight: 5,
     },
     price: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginVertical: 10,
-        color: '#111',
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#10c44c',
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingTop: 10,
     },
     pricing: {
         marginBottom: 10,

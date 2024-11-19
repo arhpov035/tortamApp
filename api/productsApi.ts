@@ -1,7 +1,10 @@
 import axios from 'axios';
+import { CONFIG } from '@/config';
+
 
 // Получаем URL API из expoConfig
-const apiUrl = 'https://sb-api.tortam.ru/api/v1';
+// const apiUrl = 'https://sb-api.tortam.ru/api/v1';
+const apiUrl = CONFIG.BASE_URL;
 
 console.log("apiUrl: " + apiUrl);
 

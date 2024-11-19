@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 
 const ProductDetail = () => {
-    const { id } = useSearchParams();
+    const { id } = useLocalSearchParams();
 
     return (
         <View style={styles.container}>

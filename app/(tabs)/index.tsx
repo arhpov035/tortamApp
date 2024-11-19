@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { fetchProducts, Product } from '@/api/productsApi';
+import { fetchProducts } from '@/api/productsApi';
 import ProductList from '@/components/ProductList';
+import { Product } from '@/types/Product';
 
 const HomePage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);

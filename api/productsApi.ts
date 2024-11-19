@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { CONFIG } from '@/config';
+import { Product } from '@/types/Product';
 
 
 // Получаем URL API из expoConfig
@@ -19,15 +20,6 @@ const apiClient = axios.create({
     baseURL: apiUrl,
 });
 
-// Тип данных для продуктов
-export interface Product {
-    id: string;
-    productname: string;
-    description: string;
-    price: number;
-    image_url: string;
-    // Добавьте другие поля, если они есть
-}
 
 // Функция для получения списка продуктов с указанием начала и количества
 export const fetchProducts = async (start: number, count: number): Promise<Product[]> => {

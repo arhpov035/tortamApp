@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-import { fetchProducts, Product } from '@/api/productsApi';
+import { fetchProducts } from '@/api/productsApi';
 import { Link } from 'expo-router';
+import { Product } from '@/types/Product';
 
 interface ProductCardProps {
     product: Product;
@@ -13,15 +14,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handlePriceClick }) 
     return (
         <View style={styles.productCard}>
             {/* Контейнер изображения продукта */}
-            <Link href={`/product/${product.id}`} style={styles.productCardImgContainer}>
-                <Image
-                    source={{ uri: product.image_url }}
-                    style={styles.productImage}
-                    resizeMode="contain"
-                />
-            </Link>
+            <TouchableOpacity style={styles.productCardImgContainer} onPress={() => console.log('Image clicked')}>
+
+                <Link href={`/product/${product.id}`} style={{ flex: 1 }}>
+                    <Image
+                        source={{ uri: product.image_url }}
+                        style={styles.productImage}
+                        resizeMode="contain"
+                    />
+                </Link>
+            </TouchableOpacity>
+
             {/* Название продукта */}
-            <Text style={styles.productTitle}>{product.productname}</Text>
+            {/* <Text style={styles.productTitle}>{product.productname}</Text> */}
+            <Link href={`/product/${product.id}`} style={styles.productTitle}>{product.productname}</Link>
 
             {/* Цена продукта */}
             <Text style={styles.price}>{product.price ? `${product.price} Р` : '2200 Р/кг'}</Text>

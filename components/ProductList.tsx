@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
-import { fetchProducts, Product } from '@/api/productsApi';
+import { fetchProducts } from '@/api/productsApi';
 import ProductCard from '@/components/ProductCard';
 import CustomModal from './CustomModal';
 import { TextInputMask } from 'react-native-masked-text';
 import PhoneOrderApi from '@/api/PhoneOrderApi';
 import { PhoneOrder } from '@/types/PhoneOrderApi';
 import { normalizePhoneNumber } from '@/utils/normalizePhoneNumber';
+import { Product } from '@/types/Product';
 
 const ProductList: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);

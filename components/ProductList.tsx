@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
-import { fetchProducts } from '@/api/productsApi';
 import ProductCard from '@/components/ProductCard';
 import CustomModal from './CustomModal';
 import { TextInputMask } from 'react-native-masked-text';
@@ -8,6 +7,7 @@ import PhoneOrderApi from '@/api/PhoneOrderApi';
 import { PhoneOrder } from '@/types/PhoneOrderApi';
 import { normalizePhoneNumber } from '@/utils/normalizePhoneNumber';
 import { Product } from '@/types/Product';
+import productApiService from '@/api/ProductApiService';
 
 const ProductList: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -28,7 +28,8 @@ const ProductList: React.FC = () => {
     const loadProducts = async (startIndex: number, append: boolean = false) => {
         try {
             setLoadingMore(true);
-            const productData = await fetchProducts(startIndex, PRODUCTS_PER_PAGE);
+            // const productData = await fetchProducts(startIndex, PRODUCTS_PER_PAGE);
+            const productData = await productApiService.fetchProducts(startIndex, PRODUCTS_PER_PAGE);
 
             if (productData.length === 0) {
                 setHasMore(false);

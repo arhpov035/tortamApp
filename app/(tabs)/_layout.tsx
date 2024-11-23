@@ -17,6 +17,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import CakeIconSvg from '@/components/svg/CakeIconSvg';
 import CupcakeIconSvg from '@/components/svg/CupcakeIconSvg';
 import HomeIconSvg from '@/components/svg/HomeIconSvg';
+import { WeightProvider } from '@/context/WeightContext';
+import { FillingProvider } from '@/context/FillingContext';
 
 export default function TabsLayout() {
     const colorScheme = useColorScheme();
@@ -87,129 +89,140 @@ export default function TabsLayout() {
     };
 
     return (
-        <View style={{ flex: 1 }}>
-            {/* Кнопка для заказа торта */}
-            {/*<TouchableOpacity style={styles.orderCustomButton} onPress={() => setIsModalVisible(true)}>*/}
-            {/*    <Text style={styles.orderCustomButtonText}>Заказать индивидуальный торт</Text>*/}
-            {/*</TouchableOpacity>*/}
+        <WeightProvider>
+            <FillingProvider>
+                <View style={{ flex: 1 }}>
+                    {/* Кнопка для заказа торта */}
+                    {/*<TouchableOpacity style={styles.orderCustomButton} onPress={() => setIsModalVisible(true)}>*/}
+                    {/*    <Text style={styles.orderCustomButtonText}>Заказать индивидуальный торт</Text>*/}
+                    {/*</TouchableOpacity>*/}
 
-            <TouchableOpacity style={styles.messageLogo} onPress={() => setIsModalmesage(true)}>
-                <MessageLogo width={50} height={50} />
-            </TouchableOpacity>
-
-            {/* Навигационное меню */}
-            <Tabs
-                screenOptions={{
-                    tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-                    headerShown: false,
-                    tabBarStyle: {
-                        zIndex: 10, // Устанавливаем zIndex
-                        elevation: 10, // Для Android добавьте elevation (аналог zIndex)
-                    },
-                }}>
-                <Tabs.Screen
-                    name="index"
-                    options={{
-                        title: 'Главная',
-                        tabBarIcon: ({ color, focused }) => (
-                            <HomeIconSvg color={focused ? '#FF8C52' : color} size={sizeIcon} />
-                        ),
-                    }}
-                />
-                <Tabs.Screen
-                    name="cakes"
-                    options={{
-                        title: 'Торты',
-                        tabBarIcon: ({ color, focused }) => (
-                            <CakeIconSvg color={focused ? '#FF849C' : color} size={sizeIcon} />
-                        ),
-                    }}
-                />
-                <Tabs.Screen
-                    name="cupcakes"
-                    options={{
-                        title: 'Капкейки',
-                        tabBarIcon: ({ color, focused }) => (
-                            <CupcakeIconSvg color={focused ? '#FF849C' : color} size={sizeIcon} />
-                        ),
-                    }}
-                />
-            </Tabs>
-
-            {/* Первое модальное окно для индивидуального заказа */}
-            <CustomModal visible={isModalVisible} onClose={() => setIsModalVisible(false)}>
-                <Text style={styles.modalTitle}>Индивидуальный заказ</Text>
-                <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
-                    <Text style={styles.imagePickerText}>Нажмите для загрузки фото</Text>
-                    {selectedImage && (
-                        <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
-                    )}
-                </TouchableOpacity>
-                <Text style={styles.imageFormats}>Форматы: SVG, PNG, JPG или GIF (Макс. 800x400 пикселей)</Text>
-                <TextInput
-                    style={styles.phoneInput}
-                    placeholder="+7 (___) ___-__-__"
-                    keyboardType="phone-pad"
-                    value={phoneNumber}
-                    onChangeText={setPhoneNumber}
-                />
-                <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-                    <Text style={styles.submitButtonText}>Отправить</Text>
-                </TouchableOpacity>
-            </CustomModal>
-
-            {/* Второе модальное окно */}
-            <CustomModal visible={isSecondModalVisible} onClose={() => setIsSecondModalVisible(false)}>
-                <AuthLinks />
-            </CustomModal>
-
-            <CustomModal visible={isModalmesage} onClose={() => setIsModalmesage(false)}>
-                <View style={styles.container}>
-                    <Text style={styles.headerText}>Свяжитесь с нами</Text>
-
-                    <View style={styles.linksContainer}>
-                        <TouchableOpacity onPress={() => Linking.openURL('https://t.me/+79004972740')}>
-                            <Text style={styles.telegramLink}>Telegram</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => Linking.openURL('https://wa.me/79004972740')}>
-                            <Text style={styles.whatsappLink}>WhatsApp</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => Linking.openURL('https://vk.com/odeshop')}>
-                            <Text style={styles.vkLink}>VK</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.formContainer}>
-                        <Text style={styles.label}>Номер телефона:</Text>
-                        <TextInputMask
-                            type={'custom'}
-                            options={{
-                                mask: '+7 (999) 999-99-99'
-                            }}
-                            value={phone}
-                            onChangeText={handlePhoneChange}
-                            keyboardType="phone-pad"
-                            style={[styles.input, phoneError ? styles.inputError : null]}
-                            placeholder="+7 (___) ___-__-__"
-                        />
-                        {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
-                    </View>
-
-                    <TouchableOpacity style={styles.submitButton} onPress={handleFormSubmit}>
-                        <Text style={styles.submitButtonText}>Отправить</Text>
+                    <TouchableOpacity style={styles.messageLogo} onPress={() => setIsModalmesage(true)}>
+                        <MessageLogo width={50} height={50} />
                     </TouchableOpacity>
 
-                    {response ? (
-                        typeof response === 'string' ? (
-                            <Text style={styles.responseText}>{response}</Text>
-                        ) : (
-                            <Text style={styles.responseText}>Ошибка: Некорректный формат данных</Text>
-                        )
-                    ) : null}
+                    {/* Навигационное меню */}
+                    <Tabs
+                        screenOptions={{
+                            tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+                            headerShown: false,
+                            tabBarStyle: {
+                                zIndex: 10, // Устанавливаем zIndex
+                                elevation: 10, // Для Android добавьте elevation (аналог zIndex)
+                            },
+                        }}>
+                        <Tabs.Screen
+                            name="index"
+                            options={{
+                                title: 'Главная',
+                                tabBarIcon: ({ color, focused }) => (
+                                    <HomeIconSvg color={focused ? '#FF8C52' : color} size={sizeIcon} />
+                                ),
+                            }}
+                        />
+                        <Tabs.Screen
+                            name="cakes"
+                            options={{
+                                title: 'Торты',
+                                tabBarIcon: ({ color, focused }) => (
+                                    <CakeIconSvg color={focused ? '#FF849C' : color} size={sizeIcon} />
+                                ),
+                            }}
+                        />
+                        <Tabs.Screen
+                            name="cupcakes"
+                            options={{
+                                title: 'Капкейки',
+                                tabBarIcon: ({ color, focused }) => (
+                                    <CupcakeIconSvg color={focused ? '#FF849C' : color} size={sizeIcon} />
+                                ),
+                            }}
+                        />
+                        <Tabs.Screen
+                            name="product/[id]"
+                            options={{
+                                href: null, // Убирает маршрут из панели навигации
+                            }}
+                        />
+                    </Tabs>
 
+                    {/* Первое модальное окно для индивидуального заказа */}
+                    <CustomModal visible={isModalVisible} onClose={() => setIsModalVisible(false)}>
+                        <Text style={styles.modalTitle}>Индивидуальный заказ</Text>
+                        <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
+                            <Text style={styles.imagePickerText}>Нажмите для загрузки фото</Text>
+                            {selectedImage && (
+                                <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
+                            )}
+                        </TouchableOpacity>
+                        <Text style={styles.imageFormats}>Форматы: SVG, PNG, JPG или GIF (Макс. 800x400 пикселей)</Text>
+                        <TextInput
+                            style={styles.phoneInput}
+                            placeholder="+7 (___) ___-__-__"
+                            keyboardType="phone-pad"
+                            value={phoneNumber}
+                            onChangeText={setPhoneNumber}
+                        />
+                        <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+                            <Text style={styles.submitButtonText}>Отправить</Text>
+                        </TouchableOpacity>
+                    </CustomModal>
+
+                    {/* Второе модальное окно */}
+                    <CustomModal visible={isSecondModalVisible} onClose={() => setIsSecondModalVisible(false)}>
+                        <AuthLinks />
+                    </CustomModal>
+
+                    <CustomModal visible={isModalmesage} onClose={() => setIsModalmesage(false)}>
+                        <View style={styles.container}>
+                            <Text style={styles.headerText}>Свяжитесь с нами</Text>
+
+                            <View style={styles.linksContainer}>
+                                <TouchableOpacity onPress={() => Linking.openURL('https://t.me/+79004972740')}>
+                                    <Text style={styles.telegramLink}>Telegram</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => Linking.openURL('https://wa.me/79004972740')}>
+                                    <Text style={styles.whatsappLink}>WhatsApp</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => Linking.openURL('https://vk.com/odeshop')}>
+                                    <Text style={styles.vkLink}>VK</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View style={styles.formContainer}>
+                                <Text style={styles.label}>Номер телефона:</Text>
+                                <TextInputMask
+                                    type={'custom'}
+                                    options={{
+                                        mask: '+7 (999) 999-99-99'
+                                    }}
+                                    value={phone}
+                                    onChangeText={handlePhoneChange}
+                                    keyboardType="phone-pad"
+                                    style={[styles.input, phoneError ? styles.inputError : null]}
+                                    placeholder="+7 (___) ___-__-__"
+                                />
+                                {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
+                            </View>
+
+                            <TouchableOpacity style={styles.submitButton} onPress={handleFormSubmit}>
+                                <Text style={styles.submitButtonText}>Отправить</Text>
+                            </TouchableOpacity>
+
+                            {response ? (
+                                typeof response === 'string' ? (
+                                    <Text style={styles.responseText}>{response}</Text>
+                                ) : (
+                                    <Text style={styles.responseText}>Ошибка: Некорректный формат данных</Text>
+                                )
+                            ) : null}
+
+                        </View>
+                    </CustomModal>
                 </View>
-            </CustomModal>
-        </View>
+            </FillingProvider>
+        </WeightProvider>
+
     );
 }
 

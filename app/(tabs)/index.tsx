@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { fetchProducts } from '@/api/productsApi';
 import ProductList from '@/components/ProductList';
 import { Product } from '@/types/Product';
+import productApiService from '@/api/ProductApiService';
 
 const HomePage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -12,7 +12,7 @@ const HomePage: React.FC = () => {
     useEffect(() => {
         const loadProducts = async () => {
             try {
-                const productData = await fetchProducts(0, 10); // Загружаем 10 продуктов, начиная с позиции 0
+                const productData = await productApiService.fetchProducts(0, 10); // Загружаем 10 продуктов, начиная с позиции 0
                 setProducts(productData);
                 setLoading(false);
             } catch (error) {
